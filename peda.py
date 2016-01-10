@@ -4321,13 +4321,16 @@ class PEDACmd(object):
         if not self._is_running():
             return
 
-        text = blue("[%s]" % "stack".center(78, "-"))
+        text = blue("[%s]" % "top of stack".center(78, "-"))
         msg(text)
         sp = peda.getreg("sp")
         if peda.is_address(sp):
             self.telescope(sp, count)
+            text = blue("[%s]" % "bottom of stack".center(78, "-"))
+            msg(text)
         else:
             msg("Invalid $SP address: 0x%x" % sp, "red")
+            msg("[%s]" % ("-"*78), "blue")
 
         return
 
@@ -4365,9 +4368,9 @@ class PEDACmd(object):
             self.context_code(count)
 
         # display stack content, forced in case SIGSEGV
+        rc = False
         if "stack" in opt or "SIGSEGV" in status:
             self.context_stack(count)
-        msg("[%s]" % ("-"*78), "blue")
         msg("Legend: %s, %s, %s, value" % (red("code"), blue("data"), green("rodata")))
 
         # display stopped reason
